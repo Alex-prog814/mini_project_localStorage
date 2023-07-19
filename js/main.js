@@ -63,7 +63,20 @@ function render() {
             </div>
         `;
     });
+
+    if(data.length === 0) return;
+    addDeleteEvent();
 };
 render();
 
 addProductBtn.addEventListener('click', createProduct);
+
+// delete
+function deleteProduct(e) {
+    console.log('WORK');
+};
+
+function addDeleteEvent() {
+    let delBtns = document.querySelectorAll('.delete-product-btn');
+    delBtns.forEach(item => item.addEventListener('click', deleteProduct));
+};
