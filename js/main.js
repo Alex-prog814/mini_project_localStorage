@@ -66,6 +66,7 @@ function render() {
 
     if(data.length === 0) return;
     addDeleteEvent();
+    addUpdateEvent();
 };
 render();
 
@@ -73,10 +74,27 @@ addProductBtn.addEventListener('click', createProduct);
 
 // delete
 function deleteProduct(e) {
-    console.log('WORK');
+    let productId = e.target.parentNode.parentNode.id;
+    let products = getProductsFromStorage();
+    products = products.filter(item => item.id != productId);
+    setProductsToStorage(products);
+    render();
 };
 
 function addDeleteEvent() {
     let delBtns = document.querySelectorAll('.delete-product-btn');
     delBtns.forEach(item => item.addEventListener('click', deleteProduct));
+};
+
+// update
+function updateProduct(e) {
+    let productId = e.target.parentNode.parentNode.id;
+    let products = getProductsFromStorage();
+    let productObj = products.find(item => item.id == productId);
+    console.log(productObj);
+};
+
+function addUpdateEvent() {
+    let updateBtns = document.querySelectorAll('.update-product-btn');
+    updateBtns.forEach(item => item.addEventListener('click', updateProduct));
 };
