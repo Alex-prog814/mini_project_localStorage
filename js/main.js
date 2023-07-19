@@ -5,7 +5,7 @@ let addProductBtn = document.querySelector('.add-product-btn');
 let saveProductBtn = document.querySelector('.save-product-btn');
 let btnClose = document.querySelector('.btn-close');
 let container = document.querySelector('.container');
-// console.log(imgInp, titleInp, priceInp, addProductBtn, saveProductBtn);
+let searchInp = document.querySelector('#search-inp');
 
 function initStorage() {
     if(!localStorage.getItem('products-data')) {
@@ -23,9 +23,21 @@ function getProductsFromStorage() {
     return products;
 };
 
+function cleanFormInp() {
+    imgInp.value = '';
+    titleInp.value = '';
+    priceInp.value = '';
+};
+
 // create
 function createProduct() {
     if(saveProductBtn.id) return;
+
+    if(
+        !imgInp.value.trim() ||
+        !titleInp.value.trim() ||
+        !priceInp.value.trim()
+    ) return alert('Some inputs are empty!');
 
     let productObj = {
         id: Date.now(),
@@ -38,9 +50,7 @@ function createProduct() {
     products.push(productObj);
     setProductsToStorage(products);
 
-    imgInp.value = '';
-    titleInp.value = '';
-    priceInp.value = '';
+    cleanFormInp();
 
     btnClose.click();
 
@@ -48,9 +58,8 @@ function createProduct() {
 };
 
 // read
-function render() {
+function render(data=getProductsFromStorage()) {
     container.innerHTML = '';
-    let data = getProductsFromStorage();
     data.forEach(item => {
         container.innerHTML += `
             <div class="card w-25 m-2" style="width: 18rem;" id="${item.id}">
@@ -80,6 +89,7 @@ function deleteProduct(e) {
     products = products.filter(item => item.id != productId);
     setProductsToStorage(products);
     render();
+    searchInp.value = '';
 };
 
 function addDeleteEvent() {
@@ -112,11 +122,25 @@ function saveChanges(e) {
     productObj.price = priceInp.value;
     setProductsToStorage(products);
     saveProductBtn.removeAttribute('id');
-    imgInp.value = '';
-    titleInp.value = '';
-    priceInp.value = '';
+    cleanFormInp();
     btnClose.click();
     render();
 };
 
 saveProductBtn.addEventListener('click', saveChanges);
+
+// search
+searchInp.addEventListener('input', e => {
+    let products = getProductsFromStorage();
+    products = products.filter(item => {
+        return item.title.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1;
+    });
+    render(products);
+});
+
+btnClose.addEventListener('click', () => {
+    cleanFormInp();
+    if(saveProductBtn.id) {
+        saveProductBtn.removeAttribute('id');
+    };
+});
