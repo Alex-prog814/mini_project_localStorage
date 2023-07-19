@@ -25,6 +25,7 @@ function getProductsFromStorage() {
 
 // create
 function createProduct() {
+    if(saveProductBtn.id) return;
 
     let productObj = {
         id: Date.now(),
@@ -58,7 +59,7 @@ function render() {
                 <h5 class="card-title">${item.title}</h5>
                 <p class="card-text">${item.price}$</p>
                 <a href="#" class="btn btn-danger delete-product-btn">Delete</a>
-                <a href="#" class="btn btn-secondary update-product-btn">Update</a>
+                <a href="#" class="btn btn-secondary update-product-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Update</a>
                 </div>
             </div>
         `;
@@ -91,10 +92,31 @@ function updateProduct(e) {
     let productId = e.target.parentNode.parentNode.id;
     let products = getProductsFromStorage();
     let productObj = products.find(item => item.id == productId);
-    console.log(productObj);
+    imgInp.value = productObj.url;
+    titleInp.value = productObj.title;
+    priceInp.value = productObj.price;
+    saveProductBtn.setAttribute('id', productId);
 };
 
 function addUpdateEvent() {
     let updateBtns = document.querySelectorAll('.update-product-btn');
     updateBtns.forEach(item => item.addEventListener('click', updateProduct));
 };
+
+function saveChanges(e) {
+    if(!e.target.id) return;
+    let products = getProductsFromStorage();
+    let productObj = products.find(item => item.id == e.target.id);
+    productObj.url = imgInp.value;
+    productObj.title = titleInp.value;
+    productObj.price = priceInp.value;
+    setProductsToStorage(products);
+    saveProductBtn.removeAttribute('id');
+    imgInp.value = '';
+    titleInp.value = '';
+    priceInp.value = '';
+    btnClose.click();
+    render();
+};
+
+saveProductBtn.addEventListener('click', saveChanges);
